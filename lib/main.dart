@@ -9,12 +9,12 @@ class AppBarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: AppBarExample());
+    return const MaterialApp(home: MyHomePage());
   }
 }
 
-class AppBarExample extends StatelessWidget {
-  const AppBarExample({super.key});
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,31 @@ class AppBarExample extends StatelessWidget {
                   )
                 );
               },
-              child: Text("test",style: TextStyle(fontSize: 25),))
+              child: Text(
+                "test",style: TextStyle(fontSize: 25)
+              ,)
+            ),
+            TextButton(
+                onPressed: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return Scaffold(
+                            appBar: AppBar(title: const Text('Next page',style: TextStyle(fontSize: 30),)),
+                            body: const Center(
+                              child: Text('這是分頁', style: TextStyle(
+                                  fontSize: 24)),
+                            ),
+                          );
+                        },
+                      )
+                  );
+                },
+                child: Text(
+                  "test",style: TextStyle(fontSize: 25)
+                  ,)
+            ),
           ],
         ),
       ),
