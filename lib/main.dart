@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 /// Flutter code sample for [AppBar].
 
 void main() => runApp(const AppBarApp());
@@ -9,7 +10,16 @@ class AppBarApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: MyHomePage());
+    return MaterialApp(
+      home: MyHomePage(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFF00CACA),
+          brightness: Brightness.dark
+        ),
+      ),
+      themeMode: ThemeMode.system,
+    );
   }
 }
 
@@ -27,15 +37,7 @@ class MyHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return Scaffold(
-                        appBar: AppBar(title: const Text('History',style: TextStyle(fontSize: 30),)),
-                        body: const Center(
-                        child: Text('歷史紀錄之類的', style: TextStyle(
-                        fontSize: 24)),
-                        ),
-                      );
-                    },
+                    builder: (BuildContext context) => HistoryInfo()
                   )
                 );
               },
@@ -46,18 +48,10 @@ class MyHomePage extends StatelessWidget {
             TextButton(
                 onPressed: (){
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return Scaffold(
-                            appBar: AppBar(title: const Text('About',style: TextStyle(fontSize: 30),)),
-                            body: const Center(
-                              child: Text('詳情之類的', style: TextStyle(
-                                  fontSize: 24)),
-                            ),
-                          );
-                        },
-                      )
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => About()
+                    )
                   );
                 },
                 child: Text(
@@ -70,8 +64,53 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home', style: TextStyle(fontSize: 30)),
       ),
+      body: Text('data')
+    );
+  }
+}
+class HistoryInfo extends StatelessWidget {
+  const HistoryInfo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('History',style: TextStyle(fontSize: 30),)),
       body: const Center(
-          child: Text('大概是遊戲', style: TextStyle(fontSize: 24))),
+        child: Text('歷史紀類的1', style: TextStyle(
+            fontSize: 24)),
+      ),
+    );
+  }
+}
+
+class About extends StatelessWidget {
+  const About({super.key});
+
+  int daysUntilChristmas() {
+    final today = DateTime.now();
+    final currentYear = today.year;
+
+    DateTime christmas = DateTime(currentYear, 12, 25);
+
+    if (today.isAfter(christmas)) {
+      christmas = DateTime(currentYear + 1, 12, 25);
+    }
+
+    return christmas.difference(today).inDays;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final daysLeft = daysUntilChristmas();
+
+    return Scaffold(
+      appBar: AppBar(title: Text("聖誕節倒數 🎄")),
+      body: Center(
+        child: Text(
+          "距離聖誕節還有 $daysLeft 天！✨",
+          style: TextStyle(fontSize: 28),
+        ),
+      ),
     );
   }
 }
