@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Flutter code sample for [AppBar].
 
@@ -11,17 +13,18 @@ class AppBarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF00CACA),
-          brightness: Brightness.dark
+          seedColor:Color(0xFF00CACA),
+          brightness: Brightness.light
         ),
-      ),
-      themeMode: ThemeMode.system,
+      )
     );
   }
 }
+
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -64,10 +67,105 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home', style: TextStyle(fontSize: 30)),
       ),
-      body: Text('data')
+      body: HomeBody()
     );
   }
 }
+class HomeBody extends StatefulWidget{
+  const HomeBody({super.key});
+  @override
+  State<HomeBody> createState() => _MyHomeBodyState();
+}
+class _MyHomeBodyState extends State<HomeBody>{
+  double position = 0;
+  bool isFlipped = false;
+  bool isStart = false;
+
+  @override
+  void initState(){
+    super.initState();
+    Timer.periodic(
+    Duration(milliseconds: 8),
+    (timer){
+      setState(() {
+        if(isStart){
+          if(isFlipped==false){
+            position -= 1;
+            if(position<=-800){
+              isFlipped = true;
+            }
+          }
+          else {
+            position += 1;
+            if(position>=-20){
+              isFlipped = false;
+            }
+          }
+        }
+      });
+    }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        AnimatedPositioned(
+          top: 0,
+          left: position,
+          height: 700,
+          duration: Duration(microseconds: 200),
+          child: Image.asset("assets/img/back.png")
+        ),
+        Positioned(
+          top: 400,
+          left: 100,
+          child: Container(
+            height: 200,
+            width: 200,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image:isFlipped==true?AssetImage("assets/img/flippadoru.png"):AssetImage("assets/img/padoru.png"),
+                fit: BoxFit.fill
+              )
+            ),
+          )
+        ),
+        Positioned(
+          top: 700,
+          left: MediaQuery.of(context).size.width/2-85,
+          child: IconButton(
+            icon: Icon(Icons.card_giftcard),
+            onPressed: (){
+              setState(() {
+                if(isStart==false){
+                  isStart = true;
+                }
+              });
+            },
+          )
+        ),
+        Positioned(
+            top: 700,
+            left: MediaQuery.of(context).size.width/2+35,
+            child: IconButton(
+              icon: Icon(Icons.stop_circle),
+              onPressed: (){
+                setState(() {
+                  if(isStart==true) {
+                    isStart = false;
+                  }
+                });
+              },
+            )
+        )
+      ],
+    );
+  }
+}
+
+
 class HistoryInfo extends StatelessWidget {
   const HistoryInfo({super.key});
 
