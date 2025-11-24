@@ -1,24 +1,49 @@
 import 'dart:async';
-
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'dart:developer' as dev;
+import 'audio/audio_controller.dart';
+import 'package:flutter/foundation.dart';
 /// Flutter code sample for [AppBar].
 
-void main() => runApp(const AppBarApp());
+void main() async {
+  // The `flutter_soloud` package logs everything
+  // (from severe warnings to fine debug messages)
+  // using the standard `package:logging`.
+  // You can listen to the logs as shown below.
+  Logger.root.level = kDebugMode ? Level.FINE : Level.INFO;
+  Logger.root.onRecord.listen((record) {
+    dev.log(
+      record.message,
+      time: record.time,
+      level: record.level.value,
+      name: record.loggerName,
+      zone: record.zone,
+      error: record.error,
+      stackTrace: record.stackTrace,
+    );
+  });
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final audioController = AudioController();
+  await audioController.initialize();
+
+  runApp(AppBarApp(audioController: audioController));
+}
 
 class AppBarApp extends StatelessWidget {
-  const AppBarApp({super.key});
-
+  const AppBarApp({required this.audioController, super.key});
+  final AudioController audioController;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: MyHomePage(audioController: audioController),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor:Color(0xFF00CACA),
-          brightness: Brightness.light
         ),
       )
     );
@@ -27,7 +52,8 @@ class AppBarApp extends StatelessWidget {
 
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({required this.audioController,super.key});
+  final AudioController audioController;
 
   @override
   Widget build(BuildContext context) {
@@ -58,21 +84,23 @@ class MyHomePage extends StatelessWidget {
                   );
                 },
                 child: Text(
-                  "About",style: TextStyle(fontSize: 25)
+                  "解凍倒數",style: TextStyle(fontSize: 25)
                   ,)
             ),
           ],
         ),
       ),
       appBar: AppBar(
-        title: const Text('Home', style: TextStyle(fontSize: 30)),
+        title: const Text('Padoru Padoru~~~', style: TextStyle(fontSize: 30)),
       ),
-      body: HomeBody()
+      body: HomeBody(audioController: audioController)
     );
   }
 }
 class HomeBody extends StatefulWidget{
-  const HomeBody({super.key});
+  const HomeBody({super.key, required this.audioController});
+  final AudioController audioController;
+
   @override
   State<HomeBody> createState() => _MyHomeBodyState();
 }
@@ -143,6 +171,7 @@ class _MyHomeBodyState extends State<HomeBody>{
                   isStart = true;
                 }
               });
+              widget.audioController.startMusic();
             },
           )
         ),
@@ -157,6 +186,7 @@ class _MyHomeBodyState extends State<HomeBody>{
                     isStart = false;
                   }
                 });
+                widget.audioController.fadeOutMusic();
               },
             )
         )
@@ -202,13 +232,40 @@ class About extends StatelessWidget {
     final daysLeft = daysUntilChristmas();
 
     return Scaffold(
-      appBar: AppBar(title: Text("聖誕節倒數 🎄")),
-      body: Center(
-        child: Text(
-          "距離聖誕節還有 $daysLeft 天！✨",
-          style: TextStyle(fontSize: 28),
-        ),
-      ),
+      appBar: AppBar(title: Text("解凍倒數")),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            height: 700,
+            child: Image.asset("assets/img/back.png")
+          ),
+          Positioned(
+            top: 500,
+            left: 50,
+            height: 50,
+            child: Text(
+              "距離聖誕節還有 $daysLeft 天！",
+              style: TextStyle(fontSize: 30),
+              ),
+          ),
+          Positioned(
+              top: 300,
+              left: 100,
+              child: Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image:daysLeft<10?AssetImage("assets/img/redeyes.png"):daysLeft<20?AssetImage("assets/img/padoru.png"):AssetImage("assets/img/freaze.png"),
+                        fit: BoxFit.fill
+                    )
+                ),
+              )
+          ),
+        ]
+      )
     );
   }
 }
