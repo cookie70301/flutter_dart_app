@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:developer' as dev;
 import 'audio/audio_controller.dart';
 import 'package:flutter/foundation.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
 /// Flutter code sample for [AppBar].
 
 void main() async {
@@ -45,6 +47,24 @@ class AppBarApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor:Color(0xFF00CACA),
         ),
+        appBarTheme: AppBarTheme(
+          backgroundColor:Color(0xFF00CACA),
+        ),
+        drawerTheme: DrawerThemeData(
+          backgroundColor: Color(0xFFCAFFFF)
+        ),
+        scaffoldBackgroundColor: Color(0xFF84C1FF),
+        textTheme: TextTheme(
+          titleLarge:GoogleFonts.amarante(
+            fontSize: 30,
+          ),
+          displayMedium: GoogleFonts.notoSans(
+            fontSize: 25,
+          ),
+          bodyMedium: GoogleFonts.notoSans(
+            fontSize: 30,
+          ),
+        )
       )
     );
   }
@@ -66,12 +86,12 @@ class MyHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => HistoryInfo()
+                    builder: (BuildContext context) => WebViewApp()
                   )
                 );
               },
               child: Text(
-                "History",style: TextStyle(fontSize: 25)
+                "Padoru Wiki",style: TextTheme.of(context).displayMedium!.copyWith(color: Theme.of(context).colorScheme.primary)
               ,)
             ),
             TextButton(
@@ -84,14 +104,14 @@ class MyHomePage extends StatelessWidget {
                   );
                 },
                 child: Text(
-                  "解凍倒數",style: TextStyle(fontSize: 25)
+                  "解凍倒數",style: TextTheme.of(context).displayMedium!.copyWith(color: Theme.of(context).colorScheme.primary)
                   ,)
             ),
           ],
         ),
       ),
       appBar: AppBar(
-        title: const Text('Padoru Padoru~~~', style: TextStyle(fontSize: 30)),
+        title: Text('Padoru Padoru~~~',style: TextTheme.of(context).titleLarge!.copyWith(color: Theme.of(context).colorScheme.primary),),
       ),
       body: HomeBody(audioController: audioController)
     );
@@ -195,22 +215,37 @@ class _MyHomeBodyState extends State<HomeBody>{
   }
 }
 
+class WebViewApp extends StatefulWidget {
+  const WebViewApp({super.key});
 
-class HistoryInfo extends StatelessWidget {
-  const HistoryInfo({super.key});
+  @override
+  State<WebViewApp> createState() => _WebViewAppState();
+}
+
+class _WebViewAppState extends State<WebViewApp> {
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..loadRequest(
+        Uri.parse('https://padoru.wiki/zh'),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('History',style: TextStyle(fontSize: 30),)),
-      body: const Center(
-        child: Text('歷史紀類的1', style: TextStyle(
-            fontSize: 24)),
+      appBar: AppBar(
+        title:  Text('Padoru Wiki',style: TextTheme.of(context).titleLarge!.copyWith(color: Theme.of(context).colorScheme.primary),),
+      ),
+      body: WebViewWidget(
+        controller: controller,
       ),
     );
   }
 }
-
 class About extends StatelessWidget {
   const About({super.key});
 
@@ -232,7 +267,7 @@ class About extends StatelessWidget {
     final daysLeft = daysUntilChristmas();
 
     return Scaffold(
-      appBar: AppBar(title: Text("解凍倒數")),
+      appBar: AppBar(title: Text("解凍倒數",style: TextTheme.of(context).titleLarge!.copyWith(color: Theme.of(context).colorScheme.primary),)),
       body: Stack(
         children: [
           Positioned(
@@ -247,7 +282,7 @@ class About extends StatelessWidget {
             height: 50,
             child: Text(
               "距離聖誕節還有 $daysLeft 天！",
-              style: TextStyle(fontSize: 30),
+              style: TextTheme.of(context).bodyMedium!.copyWith(color: Theme.of(context).colorScheme.error),
               ),
           ),
           Positioned(

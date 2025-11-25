@@ -59,7 +59,7 @@ class AudioController {
       _log.info('Nothing to fade out');
       return;
     }
-    const length = Duration(seconds: 1);
+    const length = Duration(milliseconds: 200);
     _soloud!.fadeVolume(_musicHandle!, 0, length);
     _soloud!.scheduleStop(_musicHandle!, length);
   }
