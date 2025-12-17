@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:developer' as dev;
 import 'audio/audio_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:project/shared_preferences/theme_provider.dart';
 
 /// Flutter code sample for [AppBar].
 
@@ -32,40 +33,23 @@ void main() async {
   final audioController = AudioController();
   await audioController.initialize();
 
-  runApp(AppBarApp(audioController: audioController));
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    child:AppBarApp(audioController: audioController))
+  );
 }
 
 class AppBarApp extends StatelessWidget {
   const AppBarApp({required this.audioController, super.key});
   final AudioController audioController;
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MyHomePage(audioController: audioController),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor:Color(0xFF00CACA),
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor:Color(0xFF00CACA),
-        ),
-        drawerTheme: DrawerThemeData(
-          backgroundColor: Color(0xFFCAFFFF)
-        ),
-        scaffoldBackgroundColor: Color(0xFF84C1FF),
-        textTheme: TextTheme(
-          titleLarge:GoogleFonts.amarante(
-            fontSize: 30,
-          ),
-          displayMedium: GoogleFonts.notoSans(
-            fontSize: 25,
-          ),
-          bodyMedium: GoogleFonts.notoSans(
-            fontSize: 30,
-          ),
-        )
-      )
+      theme:themeProvider.currentTheme,
     );
   }
 }
@@ -77,6 +61,9 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final themeProvider = context.watch<ThemeProvider>();
+
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -112,6 +99,14 @@ class MyHomePage extends StatelessWidget {
       ),
       appBar: AppBar(
         title: Text('Padoru Padoru~~~',style: TextTheme.of(context).titleLarge!.copyWith(color: Theme.of(context).colorScheme.primary),),
+        actions: [
+          IconButton(onPressed: (){
+            bool currentMode = themeProvider.isDarkMode;
+            themeProvider.toggleTheme(!currentMode);
+          },
+          icon: Icon(Icons.light_mode)
+          )
+        ],
       ),
       body: HomeBody(audioController: audioController)
     );
